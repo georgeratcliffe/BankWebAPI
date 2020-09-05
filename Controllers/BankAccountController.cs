@@ -6,9 +6,12 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using BankWebAPI.Models;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Authorization;
 
 namespace BankWebAPI.Controllers
 {
+    [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
     [Route("api/[controller]")]
     [ApiController]
     public class BankAccountController : ControllerBase
@@ -24,7 +27,8 @@ namespace BankWebAPI.Controllers
         [HttpGet]
         public async Task<ActionResult<IEnumerable<BankAccount>>> GetBankAccounts()
         {
-            return await _context.BankAccounts.ToListAsync();
+            string userId = User.Claims.First(c => c.Type == "UserID").Value;
+            return await _context.BankAccounts.Where(ba => ba.UserID == userId).ToListAsync();
         }
 
         // GET: api/BankAccount/5
@@ -51,6 +55,9 @@ namespace BankWebAPI.Controllers
             {
                 return BadRequest();
             }
+
+            string userId = User.Claims.First(c => c.Type == "UserID").Value;
+            bankAccount.UserID = userId;
 
             _context.Entry(bankAccount).State = EntityState.Modified;
 
@@ -79,6 +86,9 @@ namespace BankWebAPI.Controllers
         [HttpPost]
         public async Task<ActionResult<BankAccount>> PostBankAccount(BankAccount bankAccount)
         {
+            string userId = User.Claims.First(c => c.Type == "UserID").Value;
+            bankAccount.UserID = userId;
+
             _context.BankAccounts.Add(bankAccount);
             await _context.SaveChangesAsync();
 

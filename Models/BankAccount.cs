@@ -22,5 +22,7 @@ namespace BankWebAPI.Models
         [Column(TypeName = "nvarchar(20)")]
         [Required]
         public string IFSC { get; set; }
+        [Column(TypeName = "nvarchar(450)")]
+        public string UserID { get; set; }
     }
 }
