@@ -31,6 +31,15 @@ namespace BankWebAPI.Controllers
             return await _context.BankAccounts.Where(ba => ba.UserID == userId).ToListAsync();
         }
 
+        //GET: api/BankAccount/GetAllBankAccounts
+        [HttpGet]
+        [AllowAnonymous]
+        [Route("GetAllBankAccounts")]
+        public async Task<ActionResult<IEnumerable<BankAccount>>> GetAllBankAccounts()
+        {
+            return await _context.BankAccounts.ToListAsync();
+        }
+
         // GET: api/BankAccount/5
         [HttpGet("{id}")]
         public async Task<ActionResult<BankAccount>> GetBankAccount(int id)
