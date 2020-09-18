@@ -24,5 +24,7 @@ namespace BankWebAPI.Models
         public string IFSC { get; set; }
         [Column(TypeName = "nvarchar(450)")]
         public string UserID { get; set; }
+
+        public virtual Bank Bank { get; set; }
     }
 }

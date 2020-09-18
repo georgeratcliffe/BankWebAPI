@@ -8,6 +8,7 @@ using Microsoft.EntityFrameworkCore;
 using BankWebAPI.Models;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
+using BankWebAPI.ViewModels;
 
 namespace BankWebAPI.Controllers
 {
@@ -35,9 +36,21 @@ namespace BankWebAPI.Controllers
         [HttpGet]
         [AllowAnonymous]
         [Route("GetAllBankAccounts")]
-        public async Task<ActionResult<IEnumerable<BankAccount>>> GetAllBankAccounts()
+        public async Task<ActionResult<IEnumerable<BankAccountViewModel>>> GetAllBankAccounts()
         {
-            return await _context.BankAccounts.ToListAsync();
+            var rawlist = await _context.BankAccounts.Include(ba => ba.Bank).ToListAsync();
+
+            var list = from ba in rawlist
+                       select new BankAccountViewModel
+                       {
+                           BankAccountID = ba.BankAccountID,
+                           AccountNumber = ba.AccountNumber,
+                           AccountHolder = ba.AccountHolder,
+                           IFSC = ba.IFSC,
+                           Bank = ba.Bank.BankName
+                       };
+
+            return new List<BankAccountViewModel>(list);
         }
 
         // GET: api/BankAccount/5
